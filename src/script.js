@@ -1,16 +1,11 @@
 import { createClient } from 'pexels';
-import imagesCardTPL from "./templates/image-card";
 
 const searchForm = document.querySelector('.form-control');
-const loadMoreBtn = document.querySelector('[data-action="load-more"]');
-const showLessBtn = document.querySelector('[data-action="show-less"]');
 const btnFetch = document.querySelector('.btn-fetch');
-const imagesContainer = document.querySelector('.js-card-container');
+const imagesContainer = document.querySelector('.imagesContainer');
 
-let pageSize = 10;
+let pageSize = 100;
 btnFetch.disabled = true
-loadMoreBtn.style.display = 'none';
-showLessBtn.style.display = 'none';
 
 searchForm.addEventListener('input', e => {
      
@@ -29,28 +24,19 @@ btnFetch.addEventListener('click', e => {
 
     fetchSmth(query)
 
-    loadMoreBtn.addEventListener('click', onLoadMore);
-
-    function onLoadMore(){
-        pageSize += 10;
-    
-        fetchSmth(query)
-    }
-
-    showLessBtn.addEventListener('click', onShowLess);
-
-    function onShowLess(){
-        if(pageSize > 10){
-            pageSize -= 10;
-        }else if (pageSize <= 10){
-        }
-    
-        fetchSmth(query)
-    }
-
     searchForm.value = '';
-    showLessBtn.style.display = 'block';
-    loadMoreBtn.style.display = 'block';
+})
+
+const io = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+        if(entry.isIntersecting){
+            const image = entry.target
+            image.src = image.dataset.lazy
+
+            image.classList.add('appear')
+            observer.unobserve(image)
+        }
+    })
 })
 
 function fetchSmth(query){
@@ -59,9 +45,20 @@ function fetchSmth(query){
 
     client.photos.search({ query, per_page: pageSize })
         .then(photos => {
-            const markup = imagesCardTPL(photos);
 
-            imagesContainer.innerHTML = markup
-        });
+            for(let i = 0; i < photos.photos.length; i ++){
+                const li = document.createElement('li')
+            
+                const image = document.createElement('img')
+                image.dataset.lazy = photos.photos[i].src.original;
+                
+                li.append(image)
+                imagesContainer.append(li)
+            }
+        })
+        .then(data => {
+            const images = document.querySelectorAll('img')
 
+            images.forEach(image => io.observe(image))
+        })
 }
