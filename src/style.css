@@ -30,7 +30,7 @@ img {
   margin-right: auto;
 }
 
-.articles {
+.imagesContainer {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   grid-gap: 20px;
@@ -43,24 +43,24 @@ img {
   margin-bottom: 30px;
 }
 
-.articles img {
-  display: block;
+
+
+.imagesContainer a {
+  text-decoration: none;
+  color: #2a2a2a;
+}
+
+
+img {
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: all 500ms linear;
   width: 100%;
   height: 200px;
   object-fit: cover;
 }
 
-.articles a {
-  text-decoration: none;
-  color: #2a2a2a;
-}
-
-.load-more{
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-
-.show-less{
-  margin-bottom: 10px;
+img.appear {
+  transform: translateX(0);
+  opacity: 1;
 }
